@@ -159,12 +159,14 @@ function App() {
     setSelectedShareholder(null);
     setActiveTab('dashboard');
     setViewCongloProfile(null);
+    setSelectedConglo(null);
   };
 
   const handleSelectShareholder = (investorName) => {
     setSelectedShareholder(investorName);
     setActiveTab('dashboard');
     setViewCongloProfile(null);
+    setSelectedConglo(null);
   };
 
   // Handle conglomerate profile view
@@ -188,6 +190,31 @@ function App() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             {dataDate && <div className="header-date">📅 Data: {dataDate}</div>}
             <div className="header-date">📊 {stockList.length} Stocks</div>
+
+            {/* Support Link */}
+            <a
+              href="https://saweria.co/okkotsuyuta"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '8px 16px',
+                borderRadius: '8px',
+                background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                color: 'white',
+                fontWeight: 600,
+                fontSize: 13,
+                textDecoration: 'none',
+                boxShadow: 'var(--shadow-sm)',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+              onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+            >
+              ☕ Support Me
+            </a>
 
             {/* Dark Mode Toggle */}
             <button

@@ -102,13 +102,15 @@ export default function ConglomerateProfile({ congloName, congloStocks, stockMap
                         </thead>
                         <tbody>
                             {stats.stocks.map((s, i) => (
-                                <tr key={s.code}>
+                                <tr
+                                    key={s.code}
+                                    onClick={() => onSelectStock(s.code)}
+                                    style={{ cursor: 'pointer' }}
+                                    className="hover-row"
+                                >
                                     <td style={{ color: 'var(--text-tertiary)', fontSize: 12 }}>{i + 1}</td>
                                     <td>
-                                        <span
-                                            style={{ fontWeight: 700, color: CHART_COLORS[i % CHART_COLORS.length], cursor: 'pointer' }}
-                                            onClick={() => onSelectStock(s.code)}
-                                        >
+                                        <span style={{ fontWeight: 700, color: CHART_COLORS[i % CHART_COLORS.length] }}>
                                             {s.code}
                                         </span>
                                     </td>
