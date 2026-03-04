@@ -23,6 +23,8 @@ Created by **kangritel**
 >
 > Thanks to @AskPerplexity for the amazing Perplexity Computer
 
+![KSEI Ownership Dashboard Preview](./assets/preview.jpg)
+
 ---
 
 Made with Perplexity Computer
