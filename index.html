@@ -3410,6 +3410,15 @@
         </svg>
         Konglo Stocks
       </button>
+      <button class="tab-btn" id="tabBtnWhale" data-tab="whale">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M1 12c1.5-5 4-8 7-8s5.5 3 7 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+          <path d="M8 4V2M5 5.5L3.5 4M11 5.5L12.5 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
+          <path d="M1 12c0 1.5 1.2 2 3 2H12c1.8 0 3-.5 3-2" stroke="currentColor" stroke-width="1.4"
+            stroke-linecap="round" />
+        </svg>
+        Top Whales
+      </button>
     </div>
 
     <!-- TAB: RINGKASAN SAHAM -->
@@ -3494,6 +3503,11 @@
             <button class="sort-btn" id="sortFF" data-sort="freefloat" data-dir="">Free Float <span
                 class="sort-arrow"></span></button>
           </div>
+        </div>
+        <div class="filter-sep"></div>
+        <div class="filter-group">
+          <button class="sort-btn" id="controllingOnlyBtn" title="Only show shareholders with ≥5% stake">≥5%
+            Pengendali</button>
         </div>
         <button class="filter-reset" id="filterReset" title="Reset filter">↺</button>
         <div class="toolbar-right">
@@ -3815,6 +3829,110 @@
       </main>
 
     </div><!-- end #tabKonglo -->
+
+    <!-- TAB: TOP WHALES -->
+    <div id="tabWhale" class="hidden">
+
+      <!-- WHALE KPI TOGGLE (mobile only) -->
+      <div class="mobile-toggle-bar" id="whaleKpiToggle"
+        onclick="this.classList.toggle('expanded');document.getElementById('whaleKpiBar').classList.toggle('mobile-expanded')">
+        <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
+          <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        </svg>
+        Metrik
+      </div>
+
+      <!-- WHALE KPI BAR -->
+      <div class="inv-kpi-bar" id="whaleKpiBar">
+        <div class="kpi-card">
+          <div class="kpi-label">Total Whale</div>
+          <div class="kpi-value num" id="whaleKpiTotal">—</div>
+          <div class="kpi-sub">Multi-stock holders</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Maks Saham</div>
+          <div class="kpi-value num" id="whaleKpiMaxStocks">—</div>
+          <div class="kpi-sub" id="whaleKpiMaxSub">paling terdiversifikasi</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Pengendali (≥5%)</div>
+          <div class="kpi-value num" id="whaleKpiControllers">—</div>
+          <div class="kpi-sub">holders with controlling stake</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Asing</div>
+          <div class="kpi-value num" id="whaleKpiForeign">—</div>
+          <div class="kpi-sub">foreign whales</div>
+        </div>
+      </div>
+
+      <!-- WHALE TOOLBAR -->
+      <div class="toolbar toolbar-combined" id="whaleToolbar">
+        <div class="search-wrap">
+          <svg class="search-icon" viewBox="0 0 14 14" fill="none">
+            <circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.4" />
+            <path d="M9.5 9.5L13 13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+          </svg>
+          <input type="search" class="search-input" id="whaleSearchInput" placeholder="Cari nama investor atau tipe..."
+            autocomplete="off" spellcheck="false">
+          <button class="search-clear" id="whaleSearchClear" aria-label="Clear search">✕</button>
+        </div>
+        <div class="filter-sep"></div>
+        <div class="filter-group">
+          <span class="filter-label">Asal</span>
+          <select class="filter-select" id="whaleOriginSelect">
+            <option value="all">Semua</option>
+            <option value="L">Lokal</option>
+            <option value="A">Asing</option>
+          </select>
+        </div>
+        <div class="filter-sep"></div>
+        <div class="filter-group sort-group-wrap">
+          <span class="filter-label">Urutkan</span>
+          <div class="sort-group">
+            <button class="sort-btn active" id="whaleSortStocks" data-wsort="stocks">Jumlah Saham <span
+                class="sort-arrow">↓</span></button>
+            <button class="sort-btn" id="whaleSortShares" data-wsort="shares">Total Lembar <span
+                class="sort-arrow"></span></button>
+          </div>
+        </div>
+        <div class="toolbar-right">
+          <span class="results-count" id="whaleResultsCount"></span>
+        </div>
+      </div>
+
+      <!-- WHALE MAIN -->
+      <main class="main" id="whaleMainContent">
+        <div class="loading-state" id="whaleLoadingState">
+          <div class="loading-spinner"></div>
+          <span style="font-size:var(--text-sm);color:var(--text-muted)">Memproses data whale...</span>
+        </div>
+        <div id="whaleTableWrap" style="display:none">
+          <div class="table-scroll">
+            <table class="inv-table" id="whaleTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Nama Investor</th>
+                  <th>Tipe</th>
+                  <th>Asal</th>
+                  <th class="right">Saham Dipegang</th>
+                  <th class="right">Total Lembar</th>
+                  <th class="right">Rata-rata %</th>
+                  <th class="right">Pengendali (≥5%)</th>
+                </tr>
+              </thead>
+              <tbody id="whaleTbody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="empty-state" id="whaleEmptyState" style="display:none">
+          <div class="empty-icon">🐋</div>
+          <div class="empty-text">Tidak ada whale yang ditemukan dengan filter ini.</div>
+        </div>
+      </main>
+
+    </div><!-- end #tabWhale -->
 
   </div>
 
@@ -5036,22 +5154,27 @@
     // ============================================================
     let invInitialized = false;
     let kongloInitialized = false;
+    let whaleInitialized = false;
 
     function switchTab(tab) {
       const summaryEl = document.getElementById('tabSummary');
       const investorEl = document.getElementById('tabInvestor');
       const kongloEl = document.getElementById('tabKonglo');
+      const whaleEl = document.getElementById('tabWhale');
       const btnSummary = document.getElementById('tabBtnSummary');
       const btnInvestor = document.getElementById('tabBtnInvestor');
       const btnKonglo = document.getElementById('tabBtnKonglo');
+      const btnWhale = document.getElementById('tabBtnWhale');
 
       // Hide all
       summaryEl.classList.add('hidden');
       investorEl.classList.add('hidden');
       kongloEl.classList.add('hidden');
+      if (whaleEl) whaleEl.classList.add('hidden');
       btnSummary.classList.remove('active');
       btnInvestor.classList.remove('active');
       btnKonglo.classList.remove('active');
+      if (btnWhale) btnWhale.classList.remove('active');
 
       // Fade-in helper for main content
       const fadeInMain = (tabId) => {
@@ -5098,6 +5221,16 @@
           kongloInitialized = true;
           initKongloTab();
         }
+      } else if (tab === 'whale' && whaleEl) {
+        whaleEl.classList.remove('hidden');
+        if (btnWhale) btnWhale.classList.add('active');
+        fadeInMain('tabWhale');
+
+        // Lazy-init whale tab on first switch
+        if (!whaleInitialized) {
+          whaleInitialized = true;
+          initWhaleTab();
+        }
       }
     }
 
@@ -5105,6 +5238,8 @@
       document.getElementById('tabBtnSummary').addEventListener('click', () => switchTab('summary'));
       document.getElementById('tabBtnInvestor').addEventListener('click', () => switchTab('investor'));
       document.getElementById('tabBtnKonglo').addEventListener('click', () => switchTab('konglo'));
+      const wBtn = document.getElementById('tabBtnWhale');
+      if (wBtn) wBtn.addEventListener('click', () => switchTab('whale'));
     }
 
     // ============================================================
@@ -5992,6 +6127,274 @@
       const zoom = container.__d3Zoom;
       svg.transition().duration(400).call(zoom.transform, d3.zoomIdentity);
     }
+
+    // ============================================================
+    // WHALE TRACKER — Phase 1 Adaptation from external-ksei
+    // Adapted from external-ksei: src/utils/dataLoader.js — buildInvestorIndex()
+    //                             src/utils/analytics.js  — getTopInvestors()
+    // ============================================================
+
+    // Build a cross-stock investor index from the global kseiData array
+    // Maps INVESTOR_NAME (uppercase) -> array of holdings
+    function buildWhaleIndex(data) {
+      const index = {};
+      for (const row of data) {
+        const name = (row.investor_name || '').toUpperCase().trim();
+        if (!name) continue;
+        if (!index[name]) index[name] = [];
+        index[name].push({
+          share_code: row.share_code,
+          issuer_name: row.issuer_name,
+          percentage: row.percentage || 0,
+          total_holding_shares: row.total_holding_shares || 0,
+          investor_type: row.investor_type || '',
+          local_foreign: row.local_foreign || '',
+          investor_name: row.investor_name,
+        });
+      }
+      // Sort each investor's holdings by percentage descending
+      for (const name of Object.keys(index)) {
+        index[name].sort((a, b) => b.percentage - a.percentage);
+      }
+      return index;
+    }
+
+    // Build the list of top "whales" — investors holding 2+ stocks, sorted by stock count
+    function getTopWhales(investorIndex, limit = 200) {
+      const whales = Object.entries(investorIndex).map(([upperName, holdings]) => {
+        const totalShares = holdings.reduce((s, h) => s + h.total_holding_shares, 0);
+        const avgPct = holdings.reduce((s, h) => s + h.percentage, 0) / holdings.length;
+        const controllingCount = holdings.filter(h => h.percentage >= 5).length;
+        const localForeign = holdings[0]?.local_foreign || '';
+        const investorType = holdings[0]?.investor_type || '';
+        const displayName = holdings[0]?.investor_name || upperName;
+        return {
+          name: displayName,
+          upperName,
+          stockCount: holdings.length,
+          totalShares,
+          avgPct,
+          controllingCount,
+          localForeign,
+          investorType,
+          holdings,
+        };
+      });
+      // Only multi-stock holders qualify as whales
+      return whales
+        .filter(w => w.stockCount >= 2)
+        .sort((a, b) => b.stockCount - a.stockCount)
+        .slice(0, limit);
+    }
+
+    // ============================================================
+    // WHALE STATE & RENDERING
+    // ============================================================
+    let whaleState = {
+      allWhales: [],
+      filteredWhales: [],
+      searchQuery: '',
+      originFilter: 'all',
+      sortKey: 'stocks',   // 'stocks' | 'shares'
+      built: false,
+    };
+
+    function buildWhaleData() {
+      if (whaleState.built) return;
+      const idx = buildWhaleIndex(KSEI_DATA);
+      whaleState.allWhales = getTopWhales(idx, 300);
+      whaleState.built = true;
+    }
+
+    function applyWhaleFilters() {
+      let list = whaleState.allWhales;
+      const q = whaleState.searchQuery.toLowerCase();
+      if (q) {
+        list = list.filter(w =>
+          w.name.toLowerCase().includes(q) ||
+          (w.investorType || '').toLowerCase().includes(q)
+        );
+      }
+      if (whaleState.originFilter !== 'all') {
+        list = list.filter(w => w.localForeign === whaleState.originFilter);
+      }
+      if (whaleState.sortKey === 'shares') {
+        list = [...list].sort((a, b) => b.totalShares - a.totalShares);
+      } else {
+        list = [...list].sort((a, b) => b.stockCount - a.stockCount);
+      }
+      whaleState.filteredWhales = list;
+    }
+
+    function renderWhaleTable() {
+      const tbody = document.getElementById('whaleTbody');
+      const emptyState = document.getElementById('whaleEmptyState');
+      const tableWrap = document.getElementById('whaleTableWrap');
+      const countEl = document.getElementById('whaleResultsCount');
+
+      if (!whaleState.filteredWhales.length) {
+        tableWrap.style.display = 'none';
+        emptyState.style.display = '';
+        if (countEl) countEl.textContent = '';
+        return;
+      }
+
+      tableWrap.style.display = '';
+      emptyState.style.display = 'none';
+      if (countEl) countEl.textContent = whaleState.filteredWhales.length + ' whale';
+
+      tbody.innerHTML = whaleState.filteredWhales.map((w, i) => {
+        const typeInfo = INVESTOR_TYPE_MAP[w.investorType] || INVESTOR_TYPE_MAP[''];
+        const typeBadgeHtml = `<span class="type-badge ${typeInfo.cls}">${typeInfo.label}</span>`;
+        const lfHtml = w.localForeign === 'L'
+          ? `<span class="lf-badge badge-local">Lokal</span>`
+          : w.localForeign === 'A'
+            ? `<span class="lf-badge badge-foreign">Asing</span>`
+            : `<span class="lf-badge badge-lf-unknown">—</span>`;
+        const totalSharesFmt = fmtNum(w.totalShares);
+        const avgPctFmt = fmtPct(w.avgPct);
+        return `
+          <tr>
+            <td class="rank">${i + 1}</td>
+            <td class="inv-name">
+              <span class="inv-name-text" title="${esc(w.name)}">${esc(w.name)}</span>
+            </td>
+            <td>${typeBadgeHtml}</td>
+            <td>${lfHtml}</td>
+            <td class="right"><strong>${w.stockCount}</strong> emiten</td>
+            <td class="right">${totalSharesFmt}</td>
+            <td class="right">${avgPctFmt}</td>
+            <td class="right">${w.controllingCount > 0 ? `<strong style="color:var(--accent)">${w.controllingCount}</strong>` : '—'}</td>
+          </tr>`;
+      }).join('');
+    }
+
+    function renderWhaleKPIs() {
+      const all = whaleState.allWhales;
+      animateKPI(document.getElementById('whaleKpiTotal'), all.length);
+      const maxStockWhale = all[0] || null;
+      animateKPI(document.getElementById('whaleKpiMaxStocks'), maxStockWhale ? maxStockWhale.stockCount : 0);
+      if (maxStockWhale) {
+        const sub = document.getElementById('whaleKpiMaxSub');
+        if (sub) sub.textContent = maxStockWhale.name.slice(0, 30);
+      }
+      const controllers = all.filter(w => w.controllingCount > 0).length;
+      animateKPI(document.getElementById('whaleKpiControllers'), controllers);
+      const foreign = all.filter(w => w.localForeign === 'A').length;
+      animateKPI(document.getElementById('whaleKpiForeign'), foreign);
+    }
+
+    function initWhaleTab() {
+      buildWhaleData();
+      document.getElementById('whaleLoadingState').style.display = 'none';
+      renderWhaleKPIs();
+      applyWhaleFilters();
+      renderWhaleTable();
+      initWhaleFilters();
+    }
+
+    function initWhaleFilters() {
+      // Whale search
+      const searchInput = document.getElementById('whaleSearchInput');
+      const searchClear = document.getElementById('whaleSearchClear');
+      if (searchInput) {
+        searchInput.addEventListener('input', () => {
+          whaleState.searchQuery = searchInput.value.trim();
+          if (searchClear) searchClear.style.display = whaleState.searchQuery ? 'flex' : 'none';
+          applyWhaleFilters();
+          renderWhaleTable();
+        });
+      }
+      if (searchClear) {
+        searchClear.addEventListener('click', () => {
+          if (searchInput) searchInput.value = '';
+          whaleState.searchQuery = '';
+          searchClear.style.display = 'none';
+          applyWhaleFilters();
+          renderWhaleTable();
+        });
+      }
+      // Whale origin filter
+      const originSelect = document.getElementById('whaleOriginSelect');
+      if (originSelect) {
+        originSelect.addEventListener('change', () => {
+          whaleState.originFilter = originSelect.value;
+          applyWhaleFilters();
+          renderWhaleTable();
+        });
+      }
+      // Whale sort buttons
+      document.getElementById('whaleSortStocks')?.addEventListener('click', function () {
+        whaleState.sortKey = 'stocks';
+        document.querySelectorAll('#whaleToolbar .sort-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        applyWhaleFilters();
+        renderWhaleTable();
+      });
+      document.getElementById('whaleSortShares')?.addEventListener('click', function () {
+        whaleState.sortKey = 'shares';
+        document.querySelectorAll('#whaleToolbar .sort-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        applyWhaleFilters();
+        renderWhaleTable();
+      });
+    }
+
+    // ============================================================
+    // TAB SWITCHING — whale tab event wiring done in initTabs above
+    // (Whale tab uses switchTab with lazy init via whaleInitialized flag)
+    // ============================================================
+
+    // ============================================================
+    // CONTROLLING SHAREHOLDERS FILTER (≥5% only)
+    // Adapted from external-ksei: src/utils/dataLoader.js — getControllingShareholders()
+    // ============================================================
+    (function initControllingFilter() {
+      const btn = document.getElementById('controllingOnlyBtn');
+      if (!btn) return;
+
+      let controllingOnly = false;
+
+      btn.addEventListener('click', () => {
+        controllingOnly = !controllingOnly;
+        btn.classList.toggle('active', controllingOnly);
+
+        // Find all rendered investor table rows in the Ringkasan tab and toggle visibility
+        const allRows = document.querySelectorAll('#mainContent .inv-table tbody tr');
+        allRows.forEach(row => {
+          if (!controllingOnly) {
+            row.style.display = '';
+            return;
+          }
+          // Read percentage from the last cell (pct-col)
+          const pctCell = row.querySelector('.pct-num');
+          if (!pctCell) { row.style.display = ''; return; }
+          const pctText = pctCell.textContent.replace(',', '.').replace('%', '').trim();
+          const pct = parseFloat(pctText);
+          row.style.display = (!isNaN(pct) && pct >= 5) ? '' : 'none';
+        });
+
+        // Mobile rows
+        const mobileRows = document.querySelectorAll('#mainContent .mobile-inv-row');
+        mobileRows.forEach(row => {
+          if (!controllingOnly) { row.style.display = ''; return; }
+          const pctEl = row.querySelector('.mobile-inv-pct');
+          if (!pctEl) { row.style.display = ''; return; }
+          const pctText = pctEl.textContent.replace(',', '.').replace('%', '').trim();
+          const pct = parseFloat(pctText);
+          row.style.display = (!isNaN(pct) && pct >= 5) ? '' : 'none';
+        });
+      });
+
+      // Re-apply filter when new cards are rendered (hook into renderPage)
+      const origRenderPage = window.renderPage;
+      if (typeof origRenderPage === 'function') {
+        window.renderPage = function (...args) {
+          origRenderPage.apply(this, args);
+          if (controllingOnly) btn.click(); // re-apply by toggling off then on
+        };
+      }
+    })();
 
     // ============================================================
     // FLOATING TOOLTIP for PEP/Conglo pills
