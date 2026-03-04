@@ -13,6 +13,7 @@ import RelationshipTree from './components/RelationshipTree';
 import ShareholderTable from './components/ShareholderTable';
 import LocalForeignChart from './components/LocalForeignChart';
 import CrossStockRelationships from './components/CrossStockRelationships';
+import ShareholderProfile from './components/ShareholderProfile';
 
 function App() {
   const [data, setData] = useState(null);
@@ -20,6 +21,7 @@ function App() {
   const [error, setError] = useState(null);
   const [selectedCode, setSelectedCode] = useState(null);
   const [retryCount, setRetryCount] = useState(0);
+  const [selectedShareholder, setSelectedShareholder] = useState(null);
 
   // Load data on mount (and on retry) — handles React 18 StrictMode double-mount
   useEffect(() => {
@@ -125,6 +127,7 @@ function App() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             {dataDate && <div className="header-date">📅 Data: {dataDate}</div>}
             <div className="header-date">📊 {stockList.length} Stocks</div>
+            <div className="header-date">👤 {Object.keys(investorIndex).length} Shareholders</div>
           </div>
         </div>
       </header>
@@ -134,37 +137,57 @@ function App() {
         {/* Search */}
         <StockSearch
           stocks={stockList}
-          onSelect={setSelectedCode}
+          investorIndex={investorIndex}
+          onSelectStock={(code) => {
+            setSelectedCode(code);
+            setSelectedShareholder(null);
+          }}
+          onSelectShareholder={(name) => {
+            setSelectedShareholder(name);
+          }}
           selectedCode={selectedCode}
         />
 
         {/* Stock Chips - Quick Select */}
-        <div style={{ marginBottom: 24 }}>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-            {stockList.slice(0, 30).map((s) => (
-              <button
-                key={s.code}
-                className={`stock-chip ${selectedCode === s.code ? 'active' : ''}`}
-                onClick={() => setSelectedCode(s.code)}
-              >
-                <div className="stock-chip-code">{s.code}</div>
-              </button>
-            ))}
-            {stockList.length > 30 && (
-              <div style={{
-                padding: '10px 12px',
-                fontSize: 12,
-                color: '#9ca3af',
-                display: 'flex',
-                alignItems: 'center',
-              }}>
-                +{stockList.length - 30} more (use search)
-              </div>
-            )}
+        {!selectedShareholder && (
+          <div style={{ marginBottom: 24 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              {stockList.slice(0, 30).map((s) => (
+                <button
+                  key={s.code}
+                  className={`stock-chip ${selectedCode === s.code ? 'active' : ''}`}
+                  onClick={() => { setSelectedCode(s.code); setSelectedShareholder(null); }}
+                >
+                  <div className="stock-chip-code">{s.code}</div>
+                </button>
+              ))}
+              {stockList.length > 30 && (
+                <div style={{
+                  padding: '10px 12px',
+                  fontSize: 12,
+                  color: '#9ca3af',
+                  display: 'flex',
+                  alignItems: 'center',
+                }}>
+                  +{stockList.length - 30} more (use search)
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
-        {selectedStock ? (
+        {/* Shareholder Profile View */}
+        {selectedShareholder && investorIndex[selectedShareholder] ? (
+          <ShareholderProfile
+            shareholderName={selectedShareholder}
+            holdings={investorIndex[selectedShareholder]}
+            onStockClick={(code) => {
+              setSelectedCode(code);
+              setSelectedShareholder(null);
+            }}
+            onBack={() => setSelectedShareholder(null)}
+          />
+        ) : selectedStock ? (
           <>
             {/* Selected Stock Header */}
             <div style={{
@@ -254,7 +277,7 @@ function App() {
         ) : (
           <div className="empty-state">
             <div className="icon">📈</div>
-            <p>Select a stock to view ownership details</p>
+            <p>Select a stock or search for a shareholder to view details</p>
           </div>
         )}
       </main>
